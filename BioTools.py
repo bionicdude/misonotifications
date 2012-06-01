@@ -15,7 +15,7 @@ class listRotator:
     def atext(self):
         return self.lrtext
 
-
+#this parse_timestamp isn't my code. I lifted it from someone on the internet a while ago. if anyone tracks it down, let me know so i can give him props (providing it's ok for me to use it ^^)
 def parse_timestamp(s):
   """Returns (datetime, tz offset in minutes) or (None, None)."""
   m = re.match(""" ^
