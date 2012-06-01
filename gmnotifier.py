@@ -25,6 +25,7 @@ class SystrayIconApp:
 		global curnews
 		global login
 		global doing
+		self.menu = gtk.Menu()		
 		if gm_UseUnity == False:
 			print "not using unity"
 			self.tray = gtk.status_icon_new_from_file("icon.png")
@@ -35,7 +36,8 @@ class SystrayIconApp:
                 	self.tray = appindicator.Indicator("example-simple-client", "gtk-execute", appindicator.CATEGORY_APPLICATION_STATUS)
 	    		self.tray.set_status (appindicator.STATUS_ACTIVE)
 			self.tray.set_attention_icon ("indicator-messages-new")
-	    	self.menu = gtk.Menu()
+			self.tray.set_menu(self.menu)
+	    	
 		if Startup()>0:
 			logger.info("seeing as the startup failed..we'll just exit now")
 			print "Error(see log)..Exiting"
@@ -48,8 +50,8 @@ class SystrayIconApp:
 		something=gobject.timeout_add(300000,mainprogloop)
 		# show about dialog
 		about = gtk.MenuItem("About")
-		about.show()
 		self.menu.append(about)
+		about.show()
 		about.connect('activate', self.show_about_dialog)
 
 		# add quit item
@@ -57,6 +59,8 @@ class SystrayIconApp:
 		quit.show()
 		self.menu.append(quit)
 		quit.connect('activate', gtk.main_quit)
+	
+
 
 
 	def on_right_click(self, icon, event_button, event_time):
