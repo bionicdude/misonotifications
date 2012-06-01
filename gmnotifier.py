@@ -36,6 +36,7 @@ class SystrayIconApp:
                 	self.tray = appindicator.Indicator("example-simple-client", "gtk-execute", appindicator.CATEGORY_APPLICATION_STATUS)
 	    		self.tray.set_status (appindicator.STATUS_ACTIVE)
 			self.tray.set_attention_icon ("indicator-messages-new")
+			self.tray.set_icon(os.getcwd() + "/icon.png")
 			self.tray.set_menu(self.menu)
 	    	
 		if Startup()>0:
