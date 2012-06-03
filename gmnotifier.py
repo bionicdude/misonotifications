@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from easygui import *
 import logging
 import logging.handlers
 import sys
@@ -17,6 +18,7 @@ import gtk
 gtk.gdk.threads_init()
 import gobject
 import dbstuff
+import misoform
 from BioTools import parse_timestamp
 
 class SystrayIconApp:
@@ -29,11 +31,12 @@ class SystrayIconApp:
 		if gm_UseUnity == False:
 			print "not using unity"
 			self.tray = gtk.status_icon_new_from_file("icon.png")
+			self.tray.set_title("AcitvityNotifier")
 			self.tray.connect('popup-menu', self.on_right_click)
 		else:
 			print "using unity"
 			import appindicator
-                	self.tray = appindicator.Indicator("example-simple-client", "gtk-execute", appindicator.CATEGORY_APPLICATION_STATUS)
+                	self.tray = appindicator.Indicator("ActivityNotifier", "gtk-execute", appindicator.CATEGORY_APPLICATION_STATUS)
 	    		self.tray.set_status (appindicator.STATUS_ACTIVE)
 			self.tray.set_attention_icon ("indicator-messages-new")
 			self.tray.set_icon(os.getcwd() + "/icon.png")
@@ -55,12 +58,19 @@ class SystrayIconApp:
 		about.show()
 		about.connect('activate', self.show_about_dialog)
 
+        	
+		#miso window
+		miso = gtk.MenuItem("newsfeed")
+		self.menu.append(miso)
+		miso.show()
+		miso.connect('activate', self.show_miso_list)
+        
 		# add quit item
 		quit = gtk.MenuItem("Quit")
 		quit.show()
 		self.menu.append(quit)
 		quit.connect('activate', gtk.main_quit)
-	
+
 
 
 
@@ -86,6 +96,11 @@ class SystrayIconApp:
 			#probably don't have tooltip property as we're using the unity stuff..
 			#we won't even bother writing debug..
 			pass
+	def show_miso_list(self, widget):
+            try:
+                msgbox(shows)
+            except:
+                pass
 
 def genNotify(gn_title="Notification",gn_msg="this is the message",gn_duration=5):
     #This will be the generic notification that will be called throughout
@@ -172,6 +187,7 @@ def mainprogloop():
  global logger
  global oh
  global initialrun
+ global shows
  if True:
    print "loop"
    try:
@@ -207,7 +223,8 @@ def mainprogloop():
             if not items[1]==gm_me:
                 logger.info(items[0] +' '+ items[1] +' '+items[2])
                 genNotify(gn_title=items[1],gn_msg=items[2])
-         oh.set_tooltip((mydata.updateshows()))
+         shows=mydata.updateshows()
+         oh.set_tooltip((shows))
          curnews = newnews
          curuser = username
          #last thing
