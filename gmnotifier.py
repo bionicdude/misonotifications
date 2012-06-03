@@ -1,5 +1,10 @@
 #!/usr/bin/python
-from easygui import *
+try:
+ notkinter=False
+ from easygui import *
+except:
+ print "you need to install tkinter to show popup"
+ notkinter=True
 import logging
 import logging.handlers
 import sys
@@ -27,6 +32,7 @@ class SystrayIconApp:
 		global curnews
 		global login
 		global doing
+		global tkinter
 		self.menu = gtk.Menu()		
 		if gm_UseUnity == False:
 			print "not using unity"
@@ -60,7 +66,10 @@ class SystrayIconApp:
 
         	
 		#miso window
-		miso = gtk.MenuItem("newsfeed")
+		if notkinter:
+			miso = gtk.MenuItem("install python-tk to use popup list")
+		else:
+			miso = gtk.MenuItem("newsfeed")
 		self.menu.append(miso)
 		miso.show()
 		miso.connect('activate', self.show_miso_list)
