@@ -203,7 +203,11 @@ def mainprogloop():
  if True:
    print "loop"
    try:
-      feed=json.loads(gm.userHomeFeed(myid,30))
+      if initialrun:
+         feedcount=30
+      else:
+         feedcount=10
+      feed=json.loads(gm.userHomeFeed(myid,feedcount))
       #print feed[0]
       for line in feed:
          created_at=parse_timestamp(line['feed_item']['created_at'].encode("utf-8"))
@@ -256,12 +260,8 @@ if __name__ == "__main__":
    #showlist[0][21:][:showlist[0][21:].find(':')]
    genNotify(gn_title=c,gn_msg=d)
    oh.set_tooltip((shows.strip()))
-   cherrypy.config.update({
-'/':
-{'tools.staticdir.on':True,
-'tools.staticdir.dir':current_dir
-}
-})
+   cherrypy.server.socket_host = gm_bindip
+   cherrypy.server.socket_port = gm_bindport
    cherrypy.tree.mount(webs.Root(),config={
 '/':
 {'tools.staticdir.on':True,
@@ -269,10 +269,4 @@ if __name__ == "__main__":
 }
 })
    thread.start_new_thread(cherrypy.engine.start,())
-   #cherrypy.quickstart(webs.Root(),config={
-#'/':
-#{'tools.staticdir.on':True,
-#'tools.staticdir.dir':current_dir
-#}
-#})
    gtk.main()

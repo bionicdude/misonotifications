@@ -24,3 +24,7 @@ gm_tooltipsize=10
 gm_repeatnotify=True
 #using unity?
 gm_UseUnity=False
+#what ip to bind to?
+gm_bindip=0.0.0.0
+#what port to bind to?
+gm_bindport=8090
