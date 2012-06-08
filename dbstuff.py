@@ -69,12 +69,12 @@ where b.who is null;'''
         logger.info('setting newshows as notified')
         conn.execute('update gomiso set notified=1 where notified=0;')
         return result.strip()
-    def TopThreeUsers(self):
+    def TopXUsers(self,usercount):
         logger.info("fetching top three users for webpage")
         conn=self.con
         conn.row_factory=sqlite3.Row
         curs=conn.cursor()
-        curs.execute('select who,count(who) howmany from gomiso where upper(who)!="%s" group by who order by howmany desc limit 4' % gm_me.upper())
+        curs.execute('select who,count(who) howmany from gomiso where upper(who)!="%s" group by who order by howmany desc limit %s' % (gm_me.upper(),str(usercount)))
         sofar=curs.fetchall()
         result = ''
         for row in sofar:

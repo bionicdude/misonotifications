@@ -1,5 +1,6 @@
 import cherrypy
 import dbstuff
+from gm_config import *
 class Root(object):
   @cherrypy.expose
   def index(self):
@@ -8,7 +9,7 @@ class Root(object):
     listitems=""
     sections='<section id="everyone"></section>\n'
     personshows=""
-    names=webdata.TopThreeUsers().split('\n')
+    names=webdata.TopXUsers(gm_tabusercount).split('\n')
     for row in names:
       listitems+='<li><a href="#%s">%s</a></li>\n' % (row,row)
       sections += '<section id="%s">\n' % row
