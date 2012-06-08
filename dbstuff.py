@@ -82,14 +82,20 @@ where b.who is null;'''
         logger.debug(result)
         return result.strip()
     def UserActivity(self,user="",noa=20):
-        #print "user activity for %s" % user
+        if user.upper()!="EVERYONE":
+            user='where upper(who)="%s"' % user
+        else:
+            user=""
         conn=self.con
         conn.row_factory=sqlite3.Row
         curs=conn.cursor()
-        curs.execute('select "when", what from gomiso where upper(who)="%s" order by "when" desc limit %s' % (user.upper(),str(noa)))
+        curs.execute('select "when", Who, What from gomiso %s order by "when" desc limit %s' % (user.upper(),str(noa)))
         thelist=curs.fetchall()
         result=''
         for row in thelist:
-            result += "%s %s\n" % (row["when"],row["what"])
+            if user=="":
+                result += '<a style="font-family:Andale Mono;font-size:12px;">%s <stu>%s</stu> %s</a>\n' % (row["when"],row["Who"],row["what"])
+            else:
+                result += '<a style="font-family:Andale Mono;font-size:12px;">%s %s</a>\n' % (row["when"],row["what"])
         #print result
         return result.strip()

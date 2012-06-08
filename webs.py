@@ -7,9 +7,10 @@ class Root(object):
     webdata=dbstuff.db()
     page=open("web/tab-tab.html","r").read()
     listitems=""
-    sections='<section id="everyone"></section>\n'
+    sections=''
     personshows=""
     names=webdata.TopXUsers(gm_tabusercount).split('\n')
+    names.insert(0,"Everyone")
     for row in names:
       listitems+='<li><a href="#%s">%s</a></li>\n' % (row,row)
       sections += '<section id="%s">\n' % row
