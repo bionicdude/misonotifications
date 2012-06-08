@@ -5,6 +5,8 @@ try:
 except:
  print "you need to install tkinter to show popup"
  notkinter=True
+import thread
+import cherrypy
 import logging
 import logging.handlers
 import sys
@@ -23,8 +25,12 @@ import gtk
 gtk.gdk.threads_init()
 import gobject
 import dbstuff
-import misoform
+mydata=dbstuff.db()
+import webs
+#import misoform
 from BioTools import parse_timestamp
+
+current_dir= os.path.dirname(os.path.abspath(__file__))
 
 class SystrayIconApp:
 	def __init__(self):
@@ -79,10 +85,7 @@ class SystrayIconApp:
 		quit.show()
 		self.menu.append(quit)
 		quit.connect('activate', gtk.main_quit)
-
-
-
-
+		
 	def on_right_click(self, icon, event_button, event_time):
 		self.menu.popup(None, None, gtk.status_icon_position_menu,
 		event_button, event_time, self.tray)
@@ -200,7 +203,7 @@ def mainprogloop():
  if True:
    print "loop"
    try:
-      feed=json.loads(gm.userHomeFeed(myid,10))
+      feed=json.loads(gm.userHomeFeed(myid,30))
       #print feed[0]
       for line in feed:
          created_at=parse_timestamp(line['feed_item']['created_at'].encode("utf-8"))
@@ -243,7 +246,6 @@ def mainprogloop():
 
 initialrun=True
 if __name__ == "__main__":
-   mydata=dbstuff.db()
    oh=SystrayIconApp()
    shows=mydata.updateshows()
    showlist=shows.split('\n')
@@ -254,4 +256,23 @@ if __name__ == "__main__":
    #showlist[0][21:][:showlist[0][21:].find(':')]
    genNotify(gn_title=c,gn_msg=d)
    oh.set_tooltip((shows.strip()))
+   cherrypy.config.update({
+'/':
+{'tools.staticdir.on':True,
+'tools.staticdir.dir':current_dir
+}
+})
+   cherrypy.tree.mount(webs.Root(),config={
+'/':
+{'tools.staticdir.on':True,
+'tools.staticdir.dir':current_dir
+}
+})
+   thread.start_new_thread(cherrypy.engine.start,())
+   #cherrypy.quickstart(webs.Root(),config={
+#'/':
+#{'tools.staticdir.on':True,
+#'tools.staticdir.dir':current_dir
+#}
+#})
    gtk.main()

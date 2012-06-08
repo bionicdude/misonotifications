@@ -33,12 +33,13 @@ class db:
         conn.row_factory=sqlite3.Row
         curs=conn.cursor()
         curs.execute('select * from gomiso')
+	#only insert new programs for users...don't worry if they've watched the same thing again (ignore the when bit)
         querystring='''
 insert into gomiso
 select a.*,0
 from tmp_gomiso a
 left outer join gomiso b
-on a."when"=b."when" and a.who=b.who and a.what=b.what
+on a.who=b.who and a.what=b.what
 where b.who is null;'''
         conn.execute(querystring)
         conn.commit()
@@ -67,4 +68,28 @@ where b.who is null;'''
         logger.debug(result)
         logger.info('setting newshows as notified')
         conn.execute('update gomiso set notified=1 where notified=0;')
+        return result.strip()
+    def TopThreeUsers(self):
+        logger.info("fetching top three users for webpage")
+        conn=self.con
+        conn.row_factory=sqlite3.Row
+        curs=conn.cursor()
+        curs.execute('select who,count(who) howmany from gomiso where upper(who)!="%s" group by who order by howmany desc limit 4' % gm_me.upper())
+        sofar=curs.fetchall()
+        result = ''
+        for row in sofar:
+            result += "%s\n" % row["Who"]
+        logger.debug(result)
+        return result.strip()
+    def UserActivity(self,user="",noa=20):
+        #print "user activity for %s" % user
+        conn=self.con
+        conn.row_factory=sqlite3.Row
+        curs=conn.cursor()
+        curs.execute('select "when", what from gomiso where upper(who)="%s" order by "when" desc limit %s' % (user.upper(),str(noa)))
+        thelist=curs.fetchall()
+        result=''
+        for row in thelist:
+            result += "%s %s\n" % (row["when"],row["what"])
+        #print result
         return result.strip()
