@@ -36,9 +36,9 @@
    padding:.6em .5em .4em;
    font-size:1em;
    line-height:1em;
-   background:#ddd;
+   background:#606060;
    text-decoration:none;
-   color:#444;
+   color:#ffffff;
    font-weight:bold;
    border-bottom:1px solid #000;
 }
@@ -47,13 +47,13 @@
    background:#000;
 }
 #centeredmenu ul li a:hover {
-   background:#36f; /* Top menu items background colour */
+   background:#303030; /* Top menu items background colour */
    color:#fff;
    border-bottom:1px solid #03f;
 }
 #centeredmenu ul li:hover a,
 #centeredmenu ul li.hover a { /* This line is required for IE 6 and below */
-   background:#36f; /* Top menu items background colour */
+   background:#303030; /* Top menu items background colour */
    color:#fff;
    border-bottom:1px solid #03f;
 }
@@ -103,3 +103,6 @@
 #centeredmenu ul li.hover ul { /* This line is required for IE 6 and below */
    display:block; /* Show the sub menus */
 }
+
+
+.BioDivClass {padding:0px 18px;max-height:0;overflow:hidden;-webkit-transition: all .5s ease;-moz-transition: all .5s ease;transition: all .5s ease;} 

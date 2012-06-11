@@ -15,17 +15,24 @@
 		return a;
 }
 	function onlyshow(thisclass,thisitem){
+	document.getElementsByTagName("html")[0].style.overflow='hidden'
 	itemlist=getElementsByClassName(thisclass)
 	for(var i=0,maxi = itemlist.length;i < maxi;++i){
-		if (itemlist[i].id==thisitem)
+		if (itemlist[i].id!=thisitem)
 			{
-			itemlist[i].style.display='block';
+			itemlist[i].style.maxHeight='0';
+			itemlist[i].style.width='0';
 			}
-		else
-			{
-			itemlist[i].style.display='none';
+	}
+	for(var i=0,maxi = itemlist.length;i < maxi;++i){			
+		if (itemlist[i].id==thisitem){
+			//itemlist[i].style.display='block';
+			itemlist[i].style.maxHeight='3000px';
+			itemlist[i].style.width='700px';
 			}
+
 		}
+	document.getElementsByTagName("html")[0].style.overflow='auto'
 	}
 </script>
 </head>

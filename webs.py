@@ -20,16 +20,16 @@ class Root(object):
          <li><a href='#' onclick="onlyshow('BioDivClass','lastfm_%s');"><span>LastFM</span></a></li>
       </ul>
 '''	  % (row,row,row,row)
-      sections += '<div class="BioDivClass" id="everything_%s" style="display:none;"><br>\n' % row
+      sections += '<div class="BioDivClass" id="everything_%s"><br>\n' % row
       for line in webdata.UserActivity(row,20).split('\n'):
         sections += line +"<br>\n"
       sections += listlast.friendtracks(row)
       sections += "<br></div>\n"
-      sections += '<div class="BioDivClass" id="gomiso_%s" style="display:none;"><br>\n' % row
+      sections += '<div class="BioDivClass" id="gomiso_%s"><br>\n' % row
       for line in webdata.UserActivity(row,20).split('\n'):
         sections += line +"<br>\n"
       sections += "<br></div>\n"
-      sections += '<div class="BioDivClass" id="lastfm_%s" style="display:none;"><br>\n' % row
+      sections += '<div class="BioDivClass" id="lastfm_%s"><br>\n' % row
       sections += listlast.friendtracks(row)
       sections += "<br></div>\n"
     content=page.replace("<<<listitems>>>",listitems)
