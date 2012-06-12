@@ -5,14 +5,41 @@
 <title>I like to see what my friends are doing...</title>
 <link href="web/menu_assets/styles.css" rel="stylesheet" type="text/css">
 <script type="text/javascript">
-	function getElementsByClassName(classname, node)  {
-		if(!node) node = document.getElementsByTagName("body")[0];
-		var a = [];
-		var re = new RegExp('\\b' + classname + '\\b');
-		var els = node.getElementsByTagName("*");
-		for(var i=0,j=els.length; i<j; i++)
-			if(re.test(els[i].className))a.push(els[i]);
-		return a;
+function swap(a, b){
+	var pa1= a.parentNode, pa2= b.parentNode, sib= b.nextSibling;
+	if(sib=== a) sib= sib.nextSibling;
+	pa1.replaceChild(b, a);
+	if(sib) pa2.insertBefore(a, sib);
+	else pa2.appendChild(a);
+	return true;
+}
+function getElementsByClassName(classname, node) {
+    if(!node) node = document.getElementsByTagName("body")[0];
+    var a = [];
+    var re = new RegExp('\\b' + classname + '\\b');
+    var els = node.getElementsByTagName("*");
+    for(var i=0,j=els.length; i<j; i++)
+    if(re.test(els[i].className))a.push(els[i]);
+    return a;
+    }
+function sortList(lll){
+  	// Get the ul object
+  	//var lll = document.getElementById(listId);
+  	/* Perform a Bubble Sort on the list items */ 
+	for (i=0;i<lll.childNodes.length -2;i++)
+		for (j=i+1;j<lll.childNodes.length-1; j++){
+			var x = lll.childNodes[i];
+			var y = lll.childNodes[j];
+  			if( (x.innerHTML != 'undefined') && (y.innerHTML != 'undefined')  && (x.innerHTML<y.innerHTML)){
+				swap(x,y);
+				}
+			}
+	}
+function SortAllLists(myclass){
+	var allmyelements = getElementsByClassName(myclass)
+	var totalelements=allmyelements.length -1
+	for (mi=0;mi < totalelements;mi++)
+		sortList(allmyelements[mi]);
 }
 	function onlyshow(thisclass,thisitem){
 	document.getElementsByTagName("html")[0].style.overflow='hidden'
@@ -43,10 +70,12 @@
 <<<listitems>>>
 </ul>
 </div><p style="text-align:center">.....</p>
-<div style="margin:0 auto;width:700px;background-color:#303030;-moz-border-radius: 15px;border-radius: 15px;">
+<div style="margin:0 auto;width:700px;background-color:#303030;-moz-border-radius: 15px;border-radius: 15px;font-family:Andale Mono;font-size:12px;">
 <<<sections>>>
 </div>
-
+<script type="text/javascript">
+        SortAllLists("BioList");
+</script>
 <p style="line-height:14px; font-size:10px; color:#999999;text-align:center;">BionicDude 2012</p>
 
 </body>

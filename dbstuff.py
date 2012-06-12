@@ -83,6 +83,7 @@ where b.who is null;'''
         return result.strip()
     def UserActivity(self,user="",noa=20):
         if user.upper()!="EVERYONE":
+            noa=40
             user='where upper(who)="%s"' % user
         else:
             user=""
@@ -94,8 +95,8 @@ where b.who is null;'''
         result=''
         for row in thelist:
             if user=="":
-                result += '<a style="font-family:Andale Mono;font-size:12px;">%s <stu>%s</stu> %s</a>\n' % (row["when"],row["Who"],row["what"])
+                result += '%s <stu>%s</stu> %s\n' % (row["when"],row["Who"],row["what"])
             else:
-                result += '<a style="font-family:Andale Mono;font-size:12px;">%s %s</a>\n' % (row["when"],row["what"])
+                result += '%s %s\n' % (row["when"],row["what"])
         #print result
         return result.strip()
