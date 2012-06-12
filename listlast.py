@@ -30,7 +30,12 @@ def friendtracks(friend,NeedUserName=False):
     return result
 def geteveryone():
 	result=""
-	friendlist=User(username, network).get_friends()
+	friendlist=getfriends()
 	for friend in friendlist:
-		result+=friendtracks(str(friend),True)
+		result+=friendtracks(friend,True)
+	return result
+def getfriends():
+	result=list()
+	for friend in User(username, network).get_friends():
+		result.append(str(friend))
 	return result
