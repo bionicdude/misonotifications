@@ -3,4 +3,6 @@ It has been designed for personal use (me and several linux using friends).
 it's not commented (at point of conception).
 seing as it's going to be uploaded and made public, i guess that should change :)
 
+This project heavily utilizes the work done by metabaron (https://github.com/metabaron) in bringing a python based api for gomiso.
+
 
