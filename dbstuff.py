@@ -18,8 +18,8 @@ class db:
 			curs.execute('create table tmp_gomiso("When" integer, Who text, What text);')
 			curs.execute('create unique index usernames_gomiso on usernames(alias_gomiso);')
 			curs.execute('create index gomiso_when on gomiso("when");')
-			curs.execute('insert into usernames values (null,"bionicdude","bionicdude","bionicdude");')
-			curs.execute('insert into gomiso values (1234567890123456789,"placeholder","initial record",0);')
+			#curs.execute('insert into usernames values (null,"bionicdude","bionicdude","bionicdude");')
+			#curs.execute('insert into gomiso values (1234567890123456789,"placeholder","initial record",0);')
 			curs.execute('create table lastfm ( "When" integer, Who text, What text,Which text, notified integer);')
 			curs.execute('create table tmp_lastfm("When" integer, Who text, What text,Which text);')
 			curs.execute('create unique index usernames_lastfm on usernames(alias_lastfm);')
@@ -120,9 +120,9 @@ class db:
 		result=''
 		for row in thelist:
 			if user=="":
-				result += '%s <stu>%s</stu> %s\n' % (row["when"],row["Who"],row["what"])
+				result += '%s <appid>GOMISO</appid> <dbname>%s</dbname> %s\n' % (row["when"],row["Who"],row["what"])
 			else:
-				result += '%s %s\n' % (row["when"],row["what"])
+				result += '%s <appid>GOMISO</appid> %s\n' % (row["when"],row["what"])
 		#print result
 		conn.commit()
 		curs.close
@@ -188,9 +188,9 @@ class db:
 		result=''
 		for row in thelist:
 			if user=="":
-				result += '%s <stu>%s</stu> %s\n' % (row["when"],row["Who"],row["what"])
+				result += '%s <appid>LASTFM</appid> <dbname>%s</dbname> %s\n' % (row["when"],row["Who"],row["what"])
 			else:
-				result += '%s %s\n' % (row["when"],row["what"])
+				result += '%s <appid>LASTFM</appid> %s\n' % (row["when"],row["what"])
 		#print result
 		conn.commit()
 		curs.close

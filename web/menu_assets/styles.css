@@ -106,6 +106,9 @@
 
 
 .BioDivClass {padding:0px 18px;max-height:0;overflow:hidden;-webkit-transition: all .5s ease;-moz-transition: all .5s ease;transition: all .5s ease;} 
-stu{
+dbname{
     text-shadow:4px 4px 8px yellow;
+}
+appid{
+    text-shadow:4px 4px 8px orange;
 }
