@@ -96,7 +96,8 @@ class db:
 		select trim(upper(who)) who,count(who) howmany
 		from lastfm where upper(who)!="%s"
 		group by who order by howmany desc limit %s) datatwo) datathree
-		''' % (gm_me.upper(),str(usercount),gm_me.upper(),str(usercount)))
+		limit %s
+		''' % (gm_me.upper(),str(usercount),gm_me.upper(),str(usercount),str(usercount)))
 		sofar=curs.fetchall()
 		result = ''
 		for row in sofar:

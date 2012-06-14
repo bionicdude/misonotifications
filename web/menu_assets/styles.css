@@ -9,7 +9,7 @@
    width:100%;
    font-family:Verdana, Geneva, sans-serif; /* Menu font */
    font-size:90%; /* Menu text size */
-   z-index:1000; /* This makes the dropdown menus appear above the page content below */
+   z-index:999; /* This makes the dropdown menus appear above the page content below */
    position:relative;
 }
 
@@ -64,6 +64,7 @@
    position:absolute;
    top:2em;
    left:0;
+   z-index:1000;
    right:auto; /*resets the right:50% on the parent ul */
    width:10em; /* width of the drop-down menus */
 }
