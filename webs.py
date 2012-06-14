@@ -2,10 +2,11 @@ import cherrypy
 import dbstuff
 import listlast
 from gm_config import *
+from gmnotifier import mydata as webdata
 class Root(object):
   @cherrypy.expose
   def index(self):
-    webdata=dbstuff.db()
+    #webdata=dbstuff.db()
     page=open("web/template.html","r").read()
     listitems=""
     sections=''
@@ -23,14 +24,16 @@ class Root(object):
       sections += '<div class="BioDivClass" id="everything_%s"><br>\n<ul class="BioList">' % row
       for line in webdata.UserActivity(row,20).split('\n'):
         sections += "<li>" +line +"</li>\n"
-      sections += listlast.friendtracks(row)
+      for line in webdata.UserFMActivity(row,20).split('\n'):
+        sections += "<li>" +line +"</li>\n"
       sections += "</ul><br></div>\n"
       sections += '<div class="BioDivClass" id="gomiso_%s">\n<ul class="BioList"><br>\n' % row
       for line in webdata.UserActivity(row,20).split('\n'):
         sections += "<li>" +line +"</li>\n"
       sections += "</ul><br></div>\n"
       sections += '<div class="BioDivClass" id="lastfm_%s">\n<ul class="BioList">\n' % row
-      sections += listlast.friendtracks(row)
+      for line in webdata.UserFMActivity(row,20).split('\n'):
+        sections += "<li>" +line +"</li>\n"
       sections += "</ul><br></div>\n"
     content=page.replace("<<<listitems>>>",listitems)
     content=content.replace("<<<sections>>>",sections)

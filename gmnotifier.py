@@ -6,6 +6,7 @@ except:
  print "you need to install tkinter to show popup"
  notkinter=True
 import thread
+import traceback
 import cherrypy
 import logging
 import logging.handlers
@@ -27,16 +28,17 @@ import gobject
 import dbstuff
 mydata=dbstuff.db()
 import webs
+import listlast
 #import misoform
 from BioTools import parse_timestamp
+import functions_gomiso
 
 current_dir= os.path.dirname(os.path.abspath(__file__))
 
 class SystrayIconApp:
 	def __init__(self):
-		global myid
-		global curnews
-		global login
+		global mgm
+		global gomiso_curnews
 		global doing
 		global tkinter
 		self.menu = gtk.Menu()
@@ -57,8 +59,7 @@ class SystrayIconApp:
 			logger.info("seeing as the startup failed..we'll just exit now")
 			print "Error(see log)..Exiting"
 			sys.exit()
-		myid=login['user']['id']
-		curnews=""
+		gomiso_curnews=""
 		genNotify(gn_title='Activity Notifier',gn_msg='Starting Application')
 		logger.info("Starting the main thread")
 		#mainprogloop() #without this line nothing updates for 5 mins
@@ -140,7 +141,7 @@ def genNotify(gn_title="Notification",gn_msg="this is the message",gn_duration=5
 	if not pynotify.init("Timekpr notification"):
 		return "timekpr notification failed to initialize"
 		sys.exit(1)
-	n = pynotify.Notification(gn_title, gn_msg,"file://%s/icon.png" % mypath)
+	n = pynotify.Notification(gn_title, gn_msg,"file://%s/icon.png" % sys.path[0])
 	#n = pynotify.Notification("Moo title", "test", "file:///path/to/icon.png")
 	n.set_urgency(pynotify.URGENCY_LOW)
 	n.set_timeout(gn_duration*1000) # 5 seconds
@@ -152,7 +153,7 @@ def genNotify(gn_title="Notification",gn_msg="this is the message",gn_duration=5
 def CreateLog(logname='GenLog',loglevel=logging.DEBUG):
 	logger=logging.getLogger(logname)
 	logger.setLevel(loglevel)
-	lh=logging.handlers.RotatingFileHandler("%s/%s.log" % (mypath,logname),maxBytes=256*1024,backupCount=9)
+	lh=logging.handlers.RotatingFileHandler("%s/%s.log" % (sys.path[0],logname),maxBytes=256*1024,backupCount=9)
 	lh.setLevel(loglevel)
 	formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 	lh.setFormatter(formatter)
@@ -164,36 +165,25 @@ def Startup():
 
 	#logger is the global logging object..
 	global logger
-	#gm is our gomiso object (global here in case anyone else needed it, but maybe they won't)
-	global gm
-	#a login oject to hold our authenticated user info
-	global login
+	#mgm is our gomiso object (global here in case anyone else needed it, but maybe they won't)
+	global mgm
+	#mlf is our lastfm object
+	global mlf
 	#mypath holds the location of the script so that relative references can be made
-	global mypath
-	mypath=sys.path[0]
 	#create the logger object..
 	logger=CreateLog("MisoNotifier")
-	#and the gomiso object..
-	gm=gomiso.gomiso()
-	#try to authentiate with miso..
-	logger.info('trying to authenticate with miso to grab api handle')
-	loginsuccess = gm.authentification(consumer_key, consumer_secret, gm_username, gm_password, tokensFile)
-	try:
-		login = json.loads(gm.getUserInfo())
-		#getting this far should meant that we were authorized, so we have populated our global login object with the json data
-		#and log our success :)
-		logger.info ('logged in as ' + login['user']['username'])
-	except:
-		logger.error('looks like we had issues logging in - check consumer_key,secret, username, password in config')
-		return 1
-		exit
+	mgm=functions_gomiso.gmclass()
+	mlf=listlast.LastFMClass()
+	if not mgm.loginsuccess:
+		sys.exit
 	return 0
 
 def mainprogloop():
-	global curnews
+	global gomiso_curnews
 	global curuser
 	global myid
-	global gm
+	global mgm
+	global mlf
 	global logger
 	global oh
 	global initialrun
@@ -202,53 +192,52 @@ def mainprogloop():
 		print "loop"
 		try:
 			if initialrun:
-				feedcount=30
+				feedcount=30#change to 30 when not debugging
 			else:
 				feedcount=10
-			feed=json.loads(gm.userHomeFeed(myid,feedcount))
-			#print feed[0]
-			for line in feed:
-				created_at=parse_timestamp(line['feed_item']['created_at'].encode("utf-8"))
-				showname=line['feed_item']['topics']['media']['title'].encode("utf-8")
-				username=line['feed_item']['user']['username'].encode("utf-8")
-				#logger.info(line)
-				if line['feed_item']['topics']['media']['kind']=='TvShow':
-					if "badge" in str(line):
-						ep_number="badge aquired: %s" % line['feed_item']['topics']['badge']['tagline']
-					else:
-						if "episode" in str(line):
-							ep_number=line['feed_item']['topics']['episode']['label']
-						else:
-							ep_number=""
-				else:
-					ep_number=""
-				#print created_at, username, showname, ep_number
-				mydata.AddTempShowRecord(created_at,username,showname + " " + ep_number)
-
-			newnews=str(created_at) +": "+showname+" "+ep_number
+			mgm.fetchgomisodata(feedcount)
+			mlf.FetchLastFMData()
 			if gm_repeatnotify==False:
-				curuser=username
-			print "current news(%s) and newnews(%s)" % (curnews, newnews)
-			if curnews!=newnews or username!=curuser:
-				updatedshows=mydata.updateshows()
-				newshows=mydata.newshows().split('\n')
-				for show in newshows:
-					items=show.split('@')
-					if not items[1]==gm_me:
-						logger.info(items[0] +' '+ items[1] +' '+items[2])
-						genNotify(gn_title=items[1],gn_msg=items[2])
-				shows=mydata.updateshows()
-				oh.set_tooltip((shows))
-				curnews = newnews
-				curuser = username
+				mgm.curuser=mgm.newuser
+			print "new news for tv?=",mgm.ThereIsNews()
+			print "current gotmiso news(%s) and newnews(%s)" % (mgm.curnews, mgm.newnews)
+			print "new news for lastfm?=",mlf.ThereIsNews()
+			print "current lastfm news(%s) and newnews(%s)" % (mlf.curnews, mlf.newnews)
+			if mgm.ThereIsNews():
+				newshows=mydata.newshows()
+				if len(newshows)>0:
+					newshows=newshows.split('\n')
+					for show in newshows:
+						items=show.split('@')
+						if not items[1]==gm_me:
+							logger.info(items[0] +' '+ items[1] +' '+items[2])
+							genNotify(gn_title=items[1],gn_msg=items[2])
+					shows=mydata.updateshows()
+				mgm.UpdateNews()
+				mgm.UpdateUser()
+			if mlf.ThereIsNews():
+				tracks=mydata.UpdateFM()#maybe need this first...
+				newtracks=mydata.newFM()
+				if len(newtracks)>0:
+					newtracks=newtracks.split('\n')
+					for track in newtracks:
+						items=track.split('@')
+						if not items[1]==gm_me:
+							logger.info("notifying: "+items[0] +' '+ items[1] +' '+items[2])
+							genNotify(gn_title=items[1],gn_msg=items[2])
+					tracks=mydata.UpdateFM()
+				mlf.UpdateNews()
+				mlf.UpdateUser()
 				#last thing
-		except Exception, e:
-			logger.error("%s" % e)
+			oh.set_tooltip(("get all notifications"))
+		except:
+			logger.error(traceback.format_exc())
 	return True
 
 initialrun=True
 if __name__ == "__main__":
 	oh=SystrayIconApp()
+	logger.info("inial updateshows() for tooltp")
 	shows=mydata.updateshows()
 	showlist=shows.split('\n')
 	a = showlist[0]
