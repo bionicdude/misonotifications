@@ -12,7 +12,7 @@ class Root(object):
     sections=''
     personshows=""
     names=webdata.TopXUsers(gm_tabusercount).split('\n')
-    names.insert(0,"Everyone")
+    names.insert(0,"EVERYONE")
     for row in names:
       listitems+='''
    <li><a href='#' onclick="onlyshow('BioDivClass','everything_%s');"><span>%s</span></a>

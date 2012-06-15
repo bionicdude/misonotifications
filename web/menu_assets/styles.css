@@ -1,4 +1,11 @@
-
+@font-face {
+	font-family: MenuFont;
+	src: url('MenuFont.ttf') format('truetype');
+}
+@font-face {
+	font-family: BodyFont;
+	src: url('BodyFont.otf') format('opentype');
+}
 /* Main menu settings */
 #centeredmenu {
    clear:both;
@@ -7,8 +14,8 @@
    padding:0;
    border-bottom:1px solid #000; /* black line below menu */
    width:100%;
-   font-family:Verdana, Geneva, sans-serif; /* Menu font */
-   font-size:90%; /* Menu text size */
+   font-family:BodyFont, sans-serif; /* Menu font */
+   font-size:16px; /* Menu text size */
    z-index:999; /* This makes the dropdown menus appear above the page content below */
    position:relative;
 }
@@ -29,6 +36,7 @@
    position:relative;
    left:50%;
    top:1px;
+
 }
 #centeredmenu ul li a {
    display:block;
@@ -39,8 +47,9 @@
    background:#606060;
    text-decoration:none;
    color:#ffffff;
-   font-weight:bold;
    border-bottom:1px solid #000;
+   -moz-border-radius: 5px;
+   border-radius: 5px;
 }
 #centeredmenu ul li.active a {
    color:#fff;
@@ -106,7 +115,14 @@
 }
 
 
-.BioDivClass {padding:0px 18px;max-height:0;overflow:hidden;-webkit-transition: all .5s ease;-moz-transition: all .5s ease;transition: all .5s ease;} 
+.BioDivClass {
+	padding:0px 18px;
+	max-height:0;
+	overflow:hidden;
+	-webkit-transition: all .5s ease;
+	-moz-transition: all .5s ease;
+	transition: all .5s ease;
+	font-family:BodyFont;font-size:10px;} 
 dbname{
     text-shadow:4px 4px 8px yellow;
 }

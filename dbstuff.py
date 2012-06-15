@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import logging
+import time
 import logging.handlers
 from gm_config import *
 
@@ -74,7 +75,7 @@ class db:
 		logger.info("\nShows not notified yet:\n" + str(result))
 		if SetAsNotified:
 			logger.info('set newshows as notified')
-			curs.execute('update gomiso set notified=1 where notified=0;')
+			curs.execute('update gomiso set notified=%d where notified=0;' % int(time.time()))
 		logger.debug("\nHere's what new shows we're returning\n" + result.strip())
 		conn.commit()
 		curs.close()
@@ -209,7 +210,30 @@ class db:
 		logger.info("\nTracks not notified yet:\n" + str(result))
 		if SetAsNotified:
 			logger.info('set new tracks as notified')
-			curs.execute('update lastfm set notified=1 where notified=0;')
+			curs.execute('update lastfm set notified=%d where notified=0;' % int(time.time()))
 		conn.commit()
 		curs.close
 		return result.strip()
+	def GetTooltip(self,ttsize=10):
+		result=""
+		conn=self.con
+		conn.row_factory=sqlite3.Row
+		curs=conn.cursor()
+		curs.execute('''
+		select * from(select * from (
+		select "when",who,what
+		from gomiso
+		order by "when" desc
+		limit %d) dataone
+		union
+		select * from(
+		select "when",who,what
+		from lastfm
+		order by "when" desc
+		limit %d) datatwo)
+		order by "when" desc
+		limit %d''' % (ttsize,ttsize,ttsize))
+		tiplines=curs.fetchall()
+		for tip in tiplines:
+			result+="%s %s %s\n" % (tip["when"],tip["who"],tip["what"])
+		return result

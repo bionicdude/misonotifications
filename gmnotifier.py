@@ -62,8 +62,8 @@ class SystrayIconApp:
 		gomiso_curnews=""
 		genNotify(gn_title='Activity Notifier',gn_msg='Starting Application')
 		logger.info("Starting the main thread")
-		#mainprogloop() #without this line nothing updates for 5 mins
-		something=gobject.timeout_add(300000,mainprogloop)
+		mainprogloop() #without this line nothing updates for 5 mins
+		something=gobject.timeout_add(3000000,mainprogloop)
 		# show about dialog
 		about = gtk.MenuItem("About")
 		self.menu.append(about)
@@ -199,10 +199,10 @@ def mainprogloop():
 			mlf.FetchLastFMData()
 			if gm_repeatnotify==False:
 				mgm.curuser=mgm.newuser
-			print "new news for tv?=",mgm.ThereIsNews()
-			print "current gotmiso news(%s) and newnews(%s)" % (mgm.curnews, mgm.newnews)
-			print "new news for lastfm?=",mlf.ThereIsNews()
-			print "current lastfm news(%s) and newnews(%s)" % (mlf.curnews, mlf.newnews)
+			#print "new news for tv?=",mgm.ThereIsNews()
+			#print "current gotmiso news(%s) and newnews(%s)" % (mgm.curnews, mgm.newnews)
+			#print "new news for lastfm?=",mlf.ThereIsNews()
+			#print "current lastfm news(%s) and newnews(%s)" % (mlf.curnews, mlf.newnews)
 			if mgm.ThereIsNews():
 				newshows=mydata.newshows()
 				if len(newshows)>0:
@@ -223,13 +223,18 @@ def mainprogloop():
 					for track in newtracks:
 						items=track.split('@')
 						if not items[1]==gm_me:
-							logger.info("notifying: "+items[0] +' '+ items[1] +' '+items[2])
-							genNotify(gn_title=items[1],gn_msg=items[2])
+							logger.info("notifying: "+items[0] +' '+ items[1])
+							genNotify(gn_title=items[0],gn_msg=items[1])
 					tracks=mydata.UpdateFM()
 				mlf.UpdateNews()
 				mlf.UpdateUser()
 				#last thing
-			oh.set_tooltip(("get all notifications"))
+			try:
+				oh.set_tooltip((mydata.GetTooltip()))
+			except:
+				#this won't work the very first time round as the object isn't fully initialized yet
+				#will revisit later to see if i can rejig stuff to compensate..
+				pass
 		except:
 			logger.error(traceback.format_exc())
 	return True
@@ -237,16 +242,7 @@ def mainprogloop():
 initialrun=True
 if __name__ == "__main__":
 	oh=SystrayIconApp()
-	logger.info("inial updateshows() for tooltp")
-	shows=mydata.updateshows()
-	showlist=shows.split('\n')
-	a = showlist[0]
-	b = a[20:]
-	c = b[:b.find(':')]
-	d = b[b.find(':')+2:]
-	#showlist[0][21:][:showlist[0][21:].find(':')]
-	genNotify(gn_title=c,gn_msg=d)
-	oh.set_tooltip((shows.strip()))
+	oh.set_tooltip((mydata.GetTooltip()))
 	cherrypy.server.socket_host = gm_bindip
 	cherrypy.server.socket_port = gm_bindport
 	cherrypy.tree.mount(webs.Root(),config={
