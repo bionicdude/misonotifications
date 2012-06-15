@@ -227,9 +227,12 @@ class db:
 		limit %d) dataone
 		union
 		select * from(
-		select "when",who,what
-		from lastfm
-		order by "when" desc
+		select a."When",a.who,b.which from(
+		select substr("when",1,10),who,which,max("when") "when" from lastfm
+		group by 1,2,3
+		order by "When" desc) a
+		inner join lastfm b on a."when"=b."when" and a.who=b.who
+		where b.which!="" order by b."when" desc
 		limit %d) datatwo)
 		order by "when" desc
 		limit %d''' % (ttsize,ttsize,ttsize))

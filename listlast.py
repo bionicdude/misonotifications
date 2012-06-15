@@ -44,7 +44,7 @@ class LastFMClass:
 				except:
 					pass
 				try:
-					mydata.AddTempFMRecord(timestring,self.dbusername,str(track.track),album)
+					mydata.AddTempFMRecord(timestring,self.dbusername,str(track.track),str(track.track.artist)+"-"+album)
 				except:
 					print "couldn't add temp record"
 				result+= "<li>"+timestring+" " +username+"-" + album+"-"+str(track.track) + '</li>\n'

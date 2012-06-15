@@ -62,7 +62,7 @@ class SystrayIconApp:
 		gomiso_curnews=""
 		genNotify(gn_title='Activity Notifier',gn_msg='Starting Application')
 		logger.info("Starting the main thread")
-		mainprogloop() #without this line nothing updates for 5 mins
+		#mainprogloop() #without this line nothing updates for 5 mins
 		something=gobject.timeout_add(3000000,mainprogloop)
 		# show about dialog
 		about = gtk.MenuItem("About")
