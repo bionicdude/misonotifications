@@ -34,8 +34,8 @@ class LastFMClass:
 		self.dbusername=username[5:-7]
 		try:
 			frienddata=User(friend, network)
-			topartists=frienddata.get_recent_tracks(10)
-			for track in topartists:
+			recenttracks=frienddata.get_recent_tracks(10)
+			for track in recenttracks:
 				timestring=string.replace(datetime.datetime.fromtimestamp(int(track.timestamp)).isoformat(),"T"," ")
 				timestring=timestring[:19]
 				try:
@@ -49,7 +49,6 @@ class LastFMClass:
 					logger.error("couldn't add temp record, album foun: " + album + "\n"+ traceback.format_exc())
 				result+= "<li>"+timestring+" " +username+"-" + album+"-"+str(track.track) + '</li>\n'
 				self.newnews=album
-			#mydata.UpdateFM()
 		except:
 			logger.error("didn't get friend data\n" + traceback.format_exc())
 			pass
@@ -59,6 +58,7 @@ class LastFMClass:
 		friendlist=self.getfriends()
 		for friend in friendlist:
 				result+=self.friendtracks(friend,True)
+		mydata.UpdateFM()
 		return result
 	def getfriends(self):
 		result=list()
