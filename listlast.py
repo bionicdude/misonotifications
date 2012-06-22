@@ -46,7 +46,7 @@ class LastFMClass:
 				try:
 					mydata.AddTempFMRecord(timestring,self.dbusername,str(track.track),str(track.track.artist)+"-"+album)
 				except:
-					print "couldn't add temp record"
+					logger.error("couldn't add temp record, album foun: " + album + "\n"+ traceback.format_exc())
 				result+= "<li>"+timestring+" " +username+"-" + album+"-"+str(track.track) + '</li>\n'
 				self.newnews=album
 			#mydata.UpdateFM()

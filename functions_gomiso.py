@@ -20,7 +20,10 @@ class gmclass:
 		#and the gomiso object..
 		#try to authentiate with miso..
 		logger.info('trying to authenticate with miso to grab api handle')
-		self.gm.authentification(consumer_key, consumer_secret, gm_username, gm_password, tokensFile)
+		try:
+			authentication=self.gm.authentification(consumer_key, consumer_secret, gm_username, gm_password, tokensFile)
+		except:
+			logger.info("authentication result:\n" + str(authentication))
 		try:
 			self.login = json.loads(self.gm.getUserInfo())
 			#getting this far should meant that we were authorized, so we have populated our global login object with the json data
@@ -29,6 +32,7 @@ class gmclass:
 			self.loginsuccess=True
 		except Exception as e:
 			logger.error('looks like we had issues logging in - check consumer_key,secret, username, password in config')
+			return 1
 	def fetchgomisodata(self,feedcount):
 		myid=self.login['user']['id']
 		feed=json.loads(self.gm.userHomeFeed(myid,feedcount))

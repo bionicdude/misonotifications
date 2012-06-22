@@ -13,6 +13,7 @@ class db:
 			#create new DB, create table stocks
 			self.con = sqlite3.connect('data' ,check_same_thread = False)
 			conn=self.con
+			conn.text_factory=str
 			curs=conn.cursor()
 			curs.execute('create table usernames (id integer primary key, NickName text, alias_gomiso text, alias_lastfm text);')
 			curs.execute('create table gomiso ( "When" integer, Who text, What text, notified integer);')
@@ -82,7 +83,7 @@ class db:
 		return result.strip()
 
 	def TopXUsers(self,usercount):
-		logger.info("fetching top three users for webpage")
+		logger.info("fetching top x users for webpage")
 		conn=self.con
 		conn.row_factory=sqlite3.Row
 		curs=conn.cursor()
@@ -103,7 +104,7 @@ class db:
 		result = ''
 		for row in sofar:
 			result += "%s\n" % row["Who"]
-		logger.debug(result)
+		#logger.debug(result)
 		conn.commit()
 		curs.close
 		return result.strip()
@@ -135,15 +136,18 @@ class db:
 	def AddTempShowRecord(self,when="",who="", what=""):
 		conn=self.con
 		conn.row_factory=sqlite3.Row
+		conn.text_factory=str
 		curs=conn.cursor()
-		curs.execute('insert into tmp_gomiso values(?,?,?);', (when, who, what))
+		curs.execute('insert into tmp_gomiso values(?,?,?);', (when, who, what.encode('ascii', 'replace')))
 		conn.commit()
 		curs.close
 
 	def AddTempFMRecord(self,when="",who="", what="",which=""):
 		conn=self.con
+		conn.text_factory=str
 		conn.row_factory=sqlite3.Row
 		curs=conn.cursor()
+		logger.debug("adding record " + str(when) +" "+who+" "+which+" "+what)
 		curs.execute('insert into tmp_lastfm values(?,?,?,?);', (when, who, what,which))
 		conn.commit()
 		curs.close
@@ -162,7 +166,9 @@ class db:
 		where b.who is null;'''
 		curs.execute(querystring)
 		conn.commit()
+		logger.info("deleting tmp_lastfm records")
 		curs.execute('delete from tmp_lastfm;')
+		logger.info("done deleting")
 		conn.commit()
 		querystring='select * from lastfm left outer join usernames on upper(who)=upper(alias_lastfm) where upper(nickname)!="%s" or nickname is null order by "when" desc limit %s' % (gm_me.upper(),str(gm_tooltipsize))
 		#print querystring
