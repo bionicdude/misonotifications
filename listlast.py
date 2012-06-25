@@ -64,6 +64,7 @@ class LastFMClass:
 		result=list()
 		for friend in User(username, network).get_friends():
 			result.append(str(friend))
+		result.append(username) #add ourself to the list so we fetch our own data..
 		return result
 	def ThereIsNews(self):
 		if self.curnews!=self.newnews or self.curuser!=self.newuser:
